@@ -8,6 +8,7 @@
 
 #import "ViewController.h"
 #import "TPDataRequest.h"
+#import "TPParkInfoVCViewController.h"
 #import "TPParkTableViewCell.h"
 #import <Masonry.h>
 
@@ -37,6 +38,7 @@
     _parkTableView                    = [[UITableView alloc] init];
     _parkTableView.delegate           = self;
     _parkTableView.dataSource         = self;
+    _parkTableView.separatorStyle     = UITableViewCellSeparatorStyleNone;
     _parkTableView.estimatedRowHeight = 80.f;
     _parkTableView.rowHeight          = UITableViewAutomaticDimension;
     [self.view addSubview:_parkTableView];
@@ -88,22 +90,36 @@
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
 {
-    UILabel *parkSectionName        = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, tableView.frame.size.width, 64)];
-    parkSectionName.backgroundColor = [UIColor whiteColor];
-    parkSectionName.text            = [[_resultParkData objectAtIndex:section] objectForKey:@"ParkName"];
+    UIView *sectionView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, tableView.frame.size.width, 30)];
+    sectionView.backgroundColor = [UIColor colorWithRed:0.71 green:0.71 blue:0.71 alpha:1.00];
     
-    return parkSectionName;
+    UILabel *parkSectionName        = [[UILabel alloc] init];
+    parkSectionName.backgroundColor = [UIColor whiteColor];
+    parkSectionName.text            = [NSString stringWithFormat:@" %@",[[_resultParkData objectAtIndex:section] objectForKey:@"ParkName"]];
+    parkSectionName.textColor = [UIColor colorWithRed:0.35 green:0.35 blue:0.35 alpha:1.00];
+    parkSectionName.font      = [UIFont fontWithName:@"AvenirNext-Medium" size:12];
+
+    [sectionView addSubview:parkSectionName];
+    
+    [parkSectionName mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.equalTo(sectionView.mas_left).offset(10);
+        make.right.top.bottom.equalTo(sectionView);
+        
+    }];
+    
+    return sectionView;
 }
 
 #pragma mark - UITableViewDelegate
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    //code
+    TPParkInfoVCViewController *parkInfoVC = [[TPParkInfoVCViewController alloc] initWithParkInfo:[_resultParkData objectAtIndex:indexPath.section]];
+    [self.navigationController pushViewController:parkInfoVC animated:YES];
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
 {
-    return 64;
+    return 30;
     
 }
 @end
