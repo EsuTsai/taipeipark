@@ -23,6 +23,7 @@
 {
     NSMutableArray *resultMutaParkList = [[NSMutableArray alloc] init];
     
+    //增加相關景點的資料
     for (NSDictionary *parkDic in parkList) {
         NSMutableDictionary *parkMutaDic = [parkDic mutableCopy];
         [parkMutaDic setObject:[self prepareRelateLocation:parkDic allParkData:parkList] forKey:@"relateLocation"];
@@ -34,6 +35,7 @@
 
 - (NSMutableArray *)prepareRelateLocation:(NSDictionary *)parkDic allParkData:(NSArray *)allData
 {
+    //找到跟自己一樣ParkName的其他景點，並忽略自己
     NSString *parkName = [parkDic objectForKey:@"ParkName"];
     NSString *parkId   = [parkDic objectForKey:@"_id"];
     

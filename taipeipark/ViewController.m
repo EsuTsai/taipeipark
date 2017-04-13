@@ -10,12 +10,15 @@
 #import "TPDataRequest.h"
 #import "TPParkInfoVCViewController.h"
 #import "TPParkTableViewCell.h"
+#import "QFLoadingView.h"
 #import <Masonry.h>
 
 @interface ViewController () <UITableViewDelegate, UITableViewDataSource>
 
 @property (nonatomic, strong) NSArray *resultParkData;
 @property (nonatomic, strong) UITableView *parkTableView;
+@property (nonatomic, strong) QFLoadingView *loadingView;
+@property (nonatomic, strong) UIRefreshControl *refreshControl;
 
 @end
 
@@ -23,6 +26,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    [self initData];
     [self prepareView];
     [self prepareData];
 }
@@ -31,6 +35,11 @@
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+- (void)initData
+{
+    _resultParkData = @[];
 }
 
 - (void)prepareView
@@ -46,18 +55,43 @@
     [_parkTableView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.top.right.bottom.equalTo(self.view);
     }];
+    
+    _loadingView = [[QFLoadingView alloc] init];
+    
+    _refreshControl                 = [[UIRefreshControl alloc] init];
+    _refreshControl.backgroundColor = [UIColor colorWithRed:0.92 green:0.96 blue:0.96 alpha:1.00];
+    _refreshControl.tintColor       = [UIColor lightGrayColor];
+    [_refreshControl addTarget:self
+                       action:@selector(prepareData)
+             forControlEvents:UIControlEventValueChanged];
+    [_parkTableView addSubview:_refreshControl];
 }
 
 - (void)prepareData
 {
+    if(!_refreshControl.refreshing){
+        [_loadingView startHud:self.view];
+    }
+    
     NSString *apiUrl = @"http://data.taipei/opendata/datalist/apiAccess?scope=resourceAquire&rid=bf073841-c734-49bf-a97f-3757a6013812";
     
-    [[TPDataRequest sharedInstance] apiGetWithPath:apiUrl params:nil needFailureAlert:YES success:^(NSArray *successData) {
+    [[TPDataRequest sharedInstance] apiGetWithPath:apiUrl params:nil success:^(NSArray *successData) {
+        //資料連線處理成功
+        [self initData];
         _resultParkData = successData;
         [_parkTableView reloadData];
-        //
-    } failure:nil completion:^{
-        //
+        
+    } failure:^(NSDictionary *errorData) {
+        //連線失敗alert
+        UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"" message:[errorData objectForKey:@"message"] preferredStyle:UIAlertControllerStyleAlert];
+        [alert addAction:[UIAlertAction actionWithTitle:@"確認" style:UIAlertActionStyleDefault handler:nil]];
+        [self presentViewController:alert animated:YES completion:nil];
+        
+    } completion:^{
+        [_loadingView stopHud];
+        if (_refreshControl) {
+            [_refreshControl endRefreshing];
+        }
     }];
 }
 
@@ -113,6 +147,9 @@
 #pragma mark - UITableViewDelegate
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    if(_refreshControl.refreshing){
+        return;
+    }
     TPParkInfoVCViewController *parkInfoVC = [[TPParkInfoVCViewController alloc] initWithParkInfo:[_resultParkData objectAtIndex:indexPath.section]];
     [self.navigationController pushViewController:parkInfoVC animated:YES];
 }

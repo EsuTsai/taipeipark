@@ -30,15 +30,8 @@
     return self;
 }
 
-//- (NSString *)getApiUrl
-//{
-//    NSString *apiUrl = @"http://data.taipei/opendata/datalist/apiAccess?scope=resourceAquire&rid=bf073841-c734-49bf-a97f-3757a6013812";
-//    return apiUrl;
-//}
-
 - (void)apiGetWithPath:(NSString *)path
                 params:(NSDictionary *)params
-      needFailureAlert:(BOOL)alert
                success:(APIFetchResult)successBlock
                failure:(void (^)(NSDictionary *errorData))failureBlock
             completion:(void (^)(void))completionBlock
@@ -48,6 +41,7 @@
     manager.responseSerializer.acceptableContentTypes = [NSSet setWithObject:@"application/json"];
     [manager GET:path parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
 
+        //資料呼叫成功，並加以處理
         NSArray *parkData = [[responseObject objectForKey:@"result"] objectForKey:@"results"];
         TPParkDataManager *parkDataManager = [[TPParkDataManager alloc] init];
         parkDataManager.parkList           = parkData;
@@ -62,11 +56,6 @@
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         NSDictionary *errorParams = @{@"status":@"fail",
                                       @"message":@"系統連線錯誤！請稍候再試"};
-        if(alert){
-//            UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"" message:[errorParams objectForKey:@"message"] preferredStyle:UIAlertControllerStyleAlert];
-//            [alert addAction:[UIAlertAction actionWithTitle:@"確認" style:UIAlertActionStyleDefault handler:nil]];
-//            [alert show];
-        }
         if(failureBlock){
             failureBlock(errorParams);
         }

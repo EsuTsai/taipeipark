@@ -29,6 +29,7 @@
         return;
     };
     
+    //圖片
     _parkImg                    = [[UIImageView alloc] init];
     _parkImg.contentMode        = UIViewContentModeScaleAspectFill;
     _parkImg.clipsToBounds      = YES;
@@ -37,18 +38,21 @@
                 placeholderImage:[UIImage imageNamed:@"img-default.png"] completed:nil];
     [self.contentView addSubview:_parkImg];
     
+    //Park Name
     _parkName           = [[UILabel alloc] init];
     _parkName.text      = [data objectForKey:@"ParkName"];
     _parkName.textColor = [UIColor colorWithRed:0.71 green:0.71 blue:0.71 alpha:1.00];
     _parkName.font      = [UIFont fontWithName:@"AvenirNext-Regular" size:14];
     [self.contentView addSubview:_parkName];
     
+    //Name
     _name           = [[UILabel alloc] init];
     _name.text      = [data objectForKey:@"Name"];
     _name.textColor = [UIColor colorWithRed:0.35 green:0.35 blue:0.35 alpha:1.00];
     _name.font      = [UIFont fontWithName:@"AvenirNext-Medium" size:18];
     [self.contentView addSubview:_name];
     
+    //Indroduction
     _introduction               = [[UILabel alloc] init];
     _introduction.numberOfLines = 0;
     _introduction.text          = [data objectForKey:@"Introduction"];

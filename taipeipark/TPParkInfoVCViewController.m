@@ -50,6 +50,7 @@
     _baseScrollView.backgroundColor = [UIColor whiteColor];
     [self.view addSubview:_baseScrollView];
     
+    //圖片
     _parkImg               = [[UIImageView alloc] init];
     _parkImg.contentMode   = UIViewContentModeScaleAspectFill;
     _parkImg.clipsToBounds = YES;
@@ -57,24 +58,28 @@
                 placeholderImage:[UIImage imageNamed:@"img-default.png"] completed:nil];
     [_baseScrollView addSubview:_parkImg];
     
+    //Park Name
     _parkName           = [[UILabel alloc] init];
     _parkName.text      = [_parkInfo objectForKey:@"ParkName"];
     _parkName.textColor = [UIColor colorWithRed:0.71 green:0.71 blue:0.71 alpha:1.00];
     _parkName.font      = [UIFont fontWithName:@"AvenirNext-Regular" size:14];
     [_baseScrollView addSubview:_parkName];
     
+    //Name
     _name           = [[UILabel alloc] init];
     _name.text      = [_parkInfo objectForKey:@"Name"];
     _name.textColor = [UIColor colorWithRed:0.35 green:0.35 blue:0.35 alpha:1.00];
     _name.font      = [UIFont fontWithName:@"AvenirNext-Medium" size:18];
     [_baseScrollView addSubview:_name];
     
+    //開放時間
     _openTime           = [[UILabel alloc] init];
     _openTime.text      = [NSString stringWithFormat:@"開放時間：%@",[_parkInfo objectForKey:@"OpenTime"]];
     _openTime.textColor = [UIColor colorWithRed:0.35 green:0.35 blue:0.35 alpha:1.00];
     _openTime.font      = [UIFont fontWithName:@"AvenirNext-Medium" size:14];
     [_baseScrollView addSubview:_openTime];
     
+    //Introduction
     _introduction               = [[UILabel alloc] init];
     _introduction.numberOfLines = 0;
     _introduction.text          = [_parkInfo objectForKey:@"Introduction"];
@@ -85,13 +90,14 @@
     [self setupConstraints];
     
     if([[_parkInfo objectForKey:@"relateLocation"] count] > 0){
+        //處理相關景點
         [self prepareRelateLocationView];
         [_baseScrollView mas_updateConstraints:^(MASConstraintMaker *make) {
             make.bottom.equalTo(_relateLocation.mas_bottom).offset(20);
         }];
     }else{
         [_baseScrollView mas_updateConstraints:^(MASConstraintMaker *make) {
-            make.bottom.equalTo(_introduction.mas_bottom);
+            make.bottom.equalTo(_introduction.mas_bottom).offset(20);
         }];
     }
     
@@ -188,6 +194,7 @@
 
 - (void)openRelateLocationVC:(UIButton *)sender
 {
+    //到相關景點的資訊頁面
     NSDictionary *relateDic = [[_parkInfo objectForKey:@"relateLocation"] objectAtIndex:sender.tag];
     TPParkInfoVCViewController *parkInfoVC = [[TPParkInfoVCViewController alloc] initWithParkInfo:relateDic];
     [self.navigationController pushViewController:parkInfoVC animated:YES];

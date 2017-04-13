@@ -17,7 +17,6 @@ typedef void (^APIFetchResult)(NSArray *successData);
 + (TPDataRequest *)sharedInstance;
 - (void)apiGetWithPath:(NSString *)path
                 params:(NSDictionary *)params
-      needFailureAlert:(BOOL)alert
                success:(APIFetchResult)successBlock
                failure:(void (^)(NSDictionary *errorData))failureBlock
             completion:(void (^)(void))completionBlock;
